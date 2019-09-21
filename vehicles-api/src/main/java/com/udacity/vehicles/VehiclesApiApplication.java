@@ -50,6 +50,9 @@ public class VehiclesApiApplication {
         return new ModelMapper();
     }
 
+    @Bean
+    public Address getAddress(){return address;}
+
     /**
      * Web Client for the maps (location) API
      * @param endpoint where to communicate for the maps API

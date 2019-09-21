@@ -2,6 +2,7 @@ package com.udacity.vehicles.service;
 
 import com.udacity.vehicles.client.maps.*;
 import com.udacity.vehicles.client.prices.*;
+import com.udacity.vehicles.domain.*;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
 
@@ -23,8 +24,8 @@ public class CarService {
     @Autowired
     private final CarRepository repository;
 
- //   @Autowired
-   // private CommandLineRunner commandLineRunner;
+    @Autowired
+    private Address address;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -37,11 +38,12 @@ public class CarService {
     @Autowired
     private WebClient webClientPricing;
 
-    public CarService(CarRepository repository, ModelMapper modelMapper, @Qualifier("maps") WebClient webClientMap, @Qualifier("pricing") WebClient webClientPricing) {
+    public CarService(CarRepository repository, ModelMapper modelMapper, Address address, @Qualifier("maps") WebClient webClientMap, @Qualifier("pricing") WebClient webClientPricing) {
         this.webClientMap = webClientMap;
         this.webClientPricing = webClientPricing;
         this.repository = repository;
         this.modelMapper = modelMapper;
+        this.address = address;
     }
 
     /**
@@ -88,9 +90,10 @@ public class CarService {
          */
 
         MapsClient mapsClient = new MapsClient(webClientMap, modelMapper);
-     //   String address = mapsClient.getAddress( location );
-     //   car.setAddress(address);
-
+        Location location = new Location();
+        location.setAddress( String.valueOf( address ) );
+        Location newAddress = mapsClient.getAddress(location);
+        car.setLocation( newAddress );
         return car;
     }
 
