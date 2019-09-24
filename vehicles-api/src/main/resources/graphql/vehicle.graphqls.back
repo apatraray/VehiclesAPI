@@ -1,0 +1,45 @@
+type Details{
+    manufacturer: Manufacturer!
+    numberOfDoors: Int!
+    fuelType: String!
+    engine: String!
+    mileage: Int!
+    modelYear: Int!
+    productionYear: Int!
+    externalColor: String!
+}
+type Location{
+    lat: Float!
+    lon: Float!
+    address: String!
+    city: String!
+    state: String!
+    zip: String!
+}
+type Manufacturer{
+    code: Int!
+    name: String!
+}
+enum Condition{
+    NEW,
+    USED
+}
+
+type Car {
+    id: ID!
+    createdAt: LocalDateTime!
+    modifiedAt: LocalDateTime!
+    condition: Condition!
+    details: Details!
+    location: Location!
+    price: String!
+}
+scalar LocalDateTime
+type Query {
+    findAllCars: [Car]!
+}
+
+type Mutation {
+    deleteCarById(id:ID!) : Boolean!
+    updateCarById(id:ID!) : Car!
+}

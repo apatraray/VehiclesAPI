@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -129,11 +128,11 @@ public class CarControllerTest {
      * @return an example Car object
      */
     private Car getCar() {
+        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
         Car car = new Car();
         car.setLocation(new Location(40.730610, -73.935242));
-        Details details = new Details();
-        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
-        details.setManufacturer(manufacturer);
+        Details details = new Details(manufacturer);
+        //details.setManufacturer(manufacturer);
         details.setModel("Impala");
         details.setMileage(32280);
         details.setExternalColor("white");

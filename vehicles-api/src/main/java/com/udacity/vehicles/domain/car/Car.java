@@ -3,16 +3,11 @@ package com.udacity.vehicles.domain.car;
 import com.udacity.vehicles.domain.Condition;
 import com.udacity.vehicles.domain.Location;
 import java.time.LocalDateTime;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -40,11 +35,11 @@ public class Car {
 
     @Valid
     @Embedded
-    private Details details = new Details();
+    private Details details;
 
     @Valid
     @Embedded
-    private Location location = new Location(0d, 0d);
+    private Location location;
 
     @Transient
     private String price;
@@ -104,4 +99,18 @@ public class Car {
     public void setPrice(String price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", modifiedAt=" + modifiedAt +
+                ", condition=" + condition +
+                ", details=" + details +
+                ", location=" + location +
+                ", price='" + price + '\'' +
+                '}';
+    }
+
 }

@@ -8,9 +8,9 @@ import com.udacity.vehicles.domain.car.CarRepository;
 
 import java.util.*;
 
+import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import org.modelmapper.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.*;
 
@@ -24,8 +24,8 @@ public class CarService {
     @Autowired
     private final CarRepository repository;
 
-    @Autowired
-    private Address address;
+//    @Autowired
+//    private Address address;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -38,12 +38,12 @@ public class CarService {
     @Autowired
     private WebClient webClientPricing;
 
-    public CarService(CarRepository repository, ModelMapper modelMapper, Address address, @Qualifier("maps") WebClient webClientMap, @Qualifier("pricing") WebClient webClientPricing) {
+    public CarService(CarRepository repository, ModelMapper modelMapper, @Qualifier("maps") WebClient webClientMap, @Qualifier("pricing") WebClient webClientPricing) {
         this.webClientMap = webClientMap;
         this.webClientPricing = webClientPricing;
         this.repository = repository;
         this.modelMapper = modelMapper;
-        this.address = address;
+     //   this.address = address;
     }
 
     /**
@@ -51,6 +51,7 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
+
         return repository.findAll();
     }
 
@@ -91,7 +92,7 @@ public class CarService {
 
         MapsClient mapsClient = new MapsClient(webClientMap, modelMapper);
         Location location = new Location();
-        location.setAddress( String.valueOf( address ) );
+ //       location.setAddress( String.valueOf( address ) );
         Location newAddress = mapsClient.getAddress(location);
         car.setLocation( newAddress );
         return car;
