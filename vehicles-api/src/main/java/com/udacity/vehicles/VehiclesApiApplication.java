@@ -44,7 +44,7 @@ public class VehiclesApiApplication {
      * @return the car manufacturers to add to the related repository
      */
     @Bean
-    CommandLineRunner initDatabase(ManufacturerRepository repository, CarRepository carRepository) {
+    CommandLineRunner initDatabase(RestTemplate restTemplate, ManufacturerRepository repository, CarRepository carRepository) {
         return args -> {
             Manufacturer manufacturer = new Manufacturer(100, "Audi");
             repository.save(manufacturer);
@@ -53,23 +53,18 @@ public class VehiclesApiApplication {
             repository.save(new Manufacturer(103, "BMW"));
             repository.save(new Manufacturer(104, "Dodge"));
             Car newCar = new Car();
-            newCar.setLocation(new Location(40.730610, -73.935242));
-            Details details = new Details("Sedan", "SE", manufacturer, 4, "Diesel", "power", 28, 2000, 1995, "black");
-            newCar.setDetails(details);
-            newCar.setCondition(Condition.USED);
-            carRepository.save(newCar);
-        };
-    }
-
-    @Bean
-    public CommandLineRunner run(RestTemplate restTemplate, CarRepository carRepository) throws Exception {
-        return args -> {
             Address address = restTemplate.getForObject(
                     "http://localhost:9191/maps?lat=27&lon=-81", Address.class);
             Price price = restTemplate.getForObject(
                     "http://localhost:8082/services/price?vehicleId=1", Price.class);
-            //add address and price to the Car based on vehicle iD
-
+            Location newLocation = new Location(40.730610, -73.935242);
+            newLocation.setAddress(address.toString());
+            newCar.setLocation(newLocation);
+            Details details = new Details("Sedan", "SE", manufacturer, 4, "Diesel", "power", 28, 2000, 1995, "black");
+            newCar.setDetails(details);
+            newCar.setCondition(Condition.USED);
+            newCar.setPrice(price.toString());
+            carRepository.save(newCar);
         };
     }
 
