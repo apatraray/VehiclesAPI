@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,11 +46,12 @@ class CarController {
      * @return list of vehicles
      */
     @GetMapping
-    Resources<Resource<Car>> list() {
+    ResponseEntity<List<Resource<Car>>> list(){
         List<Resource<Car>> cars = carService.list().stream().map(assembler::toResource)
                 .collect(Collectors.toList());
-        return new Resources<>(cars,
-                linkTo(methodOn(CarController.class).list()).withRel("cars"));
+        return new ResponseEntity<>(
+                cars,
+                HttpStatus.OK);
     }
 
     /**

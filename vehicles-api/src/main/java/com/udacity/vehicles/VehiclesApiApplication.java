@@ -58,12 +58,16 @@ public class VehiclesApiApplication {
             Price price = restTemplate.getForObject(
                     "http://localhost:8082/services/price?vehicleId=1", Price.class);
             Location newLocation = new Location(40.730610, -73.935242);
-            newLocation.setAddress(address.toString());
+            newLocation.setAddress(address.getAddress());
+            newLocation.setCity(address.getCity());
+            newLocation.setState(address.getState());
+            newLocation.setZip(address.getZip());
+
             newCar.setLocation(newLocation);
             Details details = new Details("Sedan", "SE", manufacturer, 4, "Diesel", "power", 28, 2000, 1995, "black");
             newCar.setDetails(details);
             newCar.setCondition(Condition.USED);
-            newCar.setPrice(price.toString());
+            newCar.setPrice(price.getPrice().toString());
             carRepository.save(newCar);
         };
     }
