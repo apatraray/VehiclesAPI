@@ -41,7 +41,7 @@ public class PricingService {
      * Gets a random price to fill in for a given vehicle ID.
      * @return random price for a vehicle
      */
-    private static BigDecimal randomPrice() {
+    public static BigDecimal randomPrice() {
         return new BigDecimal(ThreadLocalRandom.current().nextDouble(1, 5))
                 .multiply(new BigDecimal(5000d)).setScale(2, RoundingMode.HALF_UP);
     }

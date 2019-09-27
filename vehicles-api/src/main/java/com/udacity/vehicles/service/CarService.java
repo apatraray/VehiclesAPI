@@ -51,8 +51,13 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-
-        return repository.findAll();
+        List<Car> newList = new ArrayList<>();
+        int listLength = repository.findAll().size();
+        for (int id=1; id<= listLength; id++){
+            Car car = findById((long) id);
+            newList.add(car);
+        }
+        return newList;
     }
 
     /**
@@ -77,7 +82,7 @@ public class CarService {
          * Note: The car class file uses @transient, meaning you will need to call
          *   the pricing service each time to get the price.
          */
-        PriceClient priceClient = new PriceClient(webClientMap);
+        PriceClient priceClient = new PriceClient(webClientPricing);
         String price = priceClient.getPrice(id);
         car.setPrice(price);
         /**
@@ -90,7 +95,7 @@ public class CarService {
          */
 
        MapsClient mapsClient = new MapsClient(webClientMap, modelMapper);
-        Location location = new Location();
+        Location location = car.getLocation();
  //       location.setAddress( String.valueOf( address ) );
         Location newAddress = mapsClient.getAddress(location);
         car.setLocation( newAddress );
@@ -108,6 +113,8 @@ public class CarService {
                     .map(carToBeUpdated -> {
                         carToBeUpdated.setDetails(car.getDetails());
                         carToBeUpdated.setLocation(car.getLocation());
+                        carToBeUpdated.setCondition(car.getCondition());
+                        carToBeUpdated.setPrice(car.getPrice());
                         return repository.save(carToBeUpdated);
                     }).orElseThrow(CarNotFoundException::new);
         }
@@ -126,22 +133,13 @@ public class CarService {
          */
         boolean deleted = false;
         Iterable<Car> allCars = repository.findAll();
-        // Loop through all dogs to check their breed
+
         for (Car c:allCars) {
                 repository.delete(c);
                 deleted = true;
         }
-        // Throw an exception if the breed doesn't exist
         if (!deleted) {
             throw new CarNotFoundException("Car Not Found");
         }
-//        return deleted;
-
-
-        /**
-         * TODO: Delete the car from the repository.
-         */
-
-
     }
 }
