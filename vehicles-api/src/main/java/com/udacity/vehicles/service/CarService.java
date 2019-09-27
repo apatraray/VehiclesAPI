@@ -66,11 +66,10 @@ public class CarService {
          *   If it does not exist, throw a CarNotFoundException
          *   Remove the below code as part of your implementation.
          */
-        Car car = new Car();
-        Optional<Optional<Car>> optionalCar = Optional.ofNullable(repository.findById(id));
-        Optional<Car> newCar = optionalCar.orElseThrow(CarNotFoundException::new);
 
-        car = newCar.get();
+        Optional<Car> optionalCar = repository.findById(id);
+        Car car = optionalCar.orElseThrow(CarNotFoundException::new);
+
         /**
          * TODO: Use the Pricing Web client you create in `VehiclesApiApplication`
          *   to get the price based on the `id` input'
@@ -90,7 +89,7 @@ public class CarService {
          * meaning the Maps service needs to be called each time for the address.
          */
 
-        MapsClient mapsClient = new MapsClient(webClientMap, modelMapper);
+       MapsClient mapsClient = new MapsClient(webClientMap, modelMapper);
         Location location = new Location();
  //       location.setAddress( String.valueOf( address ) );
         Location newAddress = mapsClient.getAddress(location);

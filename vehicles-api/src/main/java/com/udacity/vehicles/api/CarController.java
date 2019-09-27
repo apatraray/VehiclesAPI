@@ -1,20 +1,15 @@
 package com.udacity.vehicles.api;
 
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.service.CarService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +41,7 @@ class CarController {
      * @return list of vehicles
      */
     @GetMapping
-    ResponseEntity<List<Resource<Car>>> list(){
+    ResponseEntity<?> list(){
         List<Resource<Car>> cars = carService.list().stream().map(assembler::toResource)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(
@@ -60,14 +55,18 @@ class CarController {
      * @return all information for the requested vehicle
      */
     @GetMapping("/{id}")
-    Resource<Car> get(@PathVariable Long id) {
+    ResponseEntity<?> get(@PathVariable Long id) {
         /**
          * TODO: Use the `findById` method from the Car Service to get car information.
          * TODO: Use the `assembler` on that car and return the resulting output.
          *   Update the first line as part of the above implementing.
          */
         Car car = carService.findById(id);
-        return assembler.toResource(car);
+        Resource<Car> newCar = assembler.toResource(car);
+
+        return new ResponseEntity<>(car,
+                HttpStatus.OK);
+    //    return ResponseEntity.ok().body(newCar);
     }
 
     /**
@@ -102,8 +101,8 @@ class CarController {
          * TODO: Use the `assembler` on that updated car and return as part of the response.
          *   Update the first line as part of the above implementing.
          */
-        Car newCar = carService.findById(id);
-        newCar = carService.save(car);
+        car.setId(id);
+        Car newCar = carService.save(car);
         Resource<Car> resource = assembler.toResource(newCar);
         return ResponseEntity.ok(resource);
     }

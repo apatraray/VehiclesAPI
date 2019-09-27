@@ -4,12 +4,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.Condition;
@@ -89,12 +91,18 @@ public class CarControllerTest {
      * @throws Exception if the read operation of the vehicle list fails
      */
     @Test
-    public void listCars() throws Exception {
+    public void list() throws Exception {
         /**
          * TODO: Add a test to check that the `get` method works by calling
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
+        mvc.perform(get("/cars/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+
+
+        verify(carService, times(1)).list();
 
     }
 
@@ -108,6 +116,10 @@ public class CarControllerTest {
          * TODO: Add a test to check that the `get` method works by calling
          *   a vehicle by ID. This should utilize the car from `getCar()` below.
          */
+        mvc.perform(get("/cars/9"))
+                .andExpect(status().isOk());
+
+        verify(carService, times(1)).findById((long) 9);
     }
 
     /**
@@ -121,6 +133,41 @@ public class CarControllerTest {
          *   when the `delete` method is called from the Car Controller. This
          *   should utilize the car from `getCar()` below.
          */
+        mvc.perform(delete("/cars/1"))
+                .andExpect(status().isNoContent());
+
+        verify(carService, times(1)).delete((long) 1);
+    }
+
+    /**
+     * Tests the update of a single car by ID.
+     * @throws Exception if the update operation of a vehicle fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        /**
+         * TODO: Add a test to check whether a vehicle is appropriately updated
+         *   when the `update` method is called from the Car Controller. This
+         *   should utilize the car from `getCar()` below.
+         */
+        Car car = getAnotherCar();
+        mvc.perform(put("/cars/1", car)
+                .content(asJsonString(car))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk());
+
+//        verify(carService, times(1)).save(car);
+
+    }
+
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -131,6 +178,29 @@ public class CarControllerTest {
         Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
         Car car = new Car();
         car.setLocation(new Location(40.730610, -73.935242));
+        Details details = new Details(manufacturer);
+        //details.setManufacturer(manufacturer);
+        details.setModel("Impala");
+        details.setMileage(1080);
+        details.setExternalColor("brown");
+        details.setBody("sedan");
+        details.setEngine("3.6L V6");
+        details.setFuelType("Gasoline");
+        details.setModelYear(2010);
+        details.setProductionYear(2010);
+        details.setNumberOfDoors(4);
+        car.setDetails(details);
+        car.setCondition(Condition.USED);
+        return car;
+    }
+    /**
+     * Creates an example of another Car object for use in testing.
+     * @return an example Car object
+     */
+    private Car getAnotherCar() {
+        Manufacturer manufacturer = new Manufacturer(102, "Ford");
+        Car car = new Car();
+        car.setLocation(new Location(50.730610, -63.935242));
         Details details = new Details(manufacturer);
         //details.setManufacturer(manufacturer);
         details.setModel("Impala");
@@ -146,4 +216,5 @@ public class CarControllerTest {
         car.setCondition(Condition.USED);
         return car;
     }
+
 }
